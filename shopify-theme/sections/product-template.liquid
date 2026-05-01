@@ -1,0 +1,440 @@
+<div class="product-page container" itemscope itemtype="http://schema.org/Product">
+  <div class="product-page__layout">
+
+    {%- comment -%} LEFT: Media Gallery {%- endcomment -%}
+    <div class="product-gallery" id="product-gallery">
+      <div class="product-gallery__main">
+        {%- if product.images.size > 0 -%}
+          {%- for image in product.images -%}
+            <div class="product-gallery__slide{% if forloop.first %} is-active{% endif %}" data-slide="{{ forloop.index0 }}">
+              {{
+                image
+                | image_url: width: 1200
+                | image_tag:
+                  loading: forloop.first | ternary: 'eager', 'lazy',
+                  class: 'product-gallery__image',
+                  alt: image.alt | default: product.title,
+                  itemprop: 'image',
+                  sizes: '(max-width: 768px) 100vw, 55vw',
+                  widths: '400, 600, 800, 1000, 1200'
+              }}
+            </div>
+          {%- endfor -%}
+        {%- else -%}
+          <div class="product-gallery__slide is-active">
+            {{ 'product-1' | placeholder_svg_tag: 'product-gallery__placeholder' }}
+          </div>
+        {%- endif -%}
+      </div>
+
+      {%- if product.images.size > 1 -%}
+        <div class="product-gallery__thumbs" role="list" aria-label="Product images">
+          {%- for image in product.images -%}
+            <button
+              class="product-gallery__thumb{% if forloop.first %} is-active{% endif %}"
+              data-thumb="{{ forloop.index0 }}"
+              aria-label="View image {{ forloop.index }}"
+              role="listitem"
+            >
+              {{
+                image
+                | image_url: width: 200
+                | image_tag:
+                  loading: 'lazy',
+                  class: 'product-gallery__thumb-img',
+                  alt: image.alt | default: product.title,
+                  widths: '80, 100, 150, 200'
+              }}
+            </button>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    </div>
+
+    {%- comment -%} RIGHT: Product Info {%- endcomment -%}
+    <div class="product-info" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+      <div class="product-info__sticky">
+
+        {%- if product.vendor != blank -%}
+          <p class="product-info__vendor" itemprop="brand">{{ product.vendor }}</p>
+        {%- endif -%}
+
+        <h1 class="product-info__title" itemprop="name">{{ product.title }}</h1>
+
+        {%- render 'star-rating', rating: 4.8, review_count: 127, show_count: true -%}
+
+        <div class="product-info__price-wrap">
+          {%- if product.compare_at_price > product.price -%}
+            <span class="product-info__price product-info__price--sale" itemprop="price" content="{{ product.price | divided_by: 100.0 }}">
+              {{ product.price | money }}
+            </span>
+            <s class="product-info__price product-info__price--compare">
+              {{ product.compare_at_price | money }}
+            </s>
+            {%- assign saving = product.compare_at_price | minus: product.price -%}
+            <span class="product-info__saving">Save {{ saving | money }}</span>
+          {%- else -%}
+            <span class="product-info__price" itemprop="price" content="{{ product.price | divided_by: 100.0 }}">
+              {{ product.price | money }}
+            </span>
+          {%- endif -%}
+          <meta itemprop="priceCurrency" content="{{ cart.currency.iso_code }}">
+        </div>
+
+        {%- if section.settings.show_installments -%}
+          <p class="product-info__installments">
+            or 4 payments of <strong>{{ product.price | divided_by: 4 | money }}</strong> with <span class="afterpay-badge">Afterpay</span>
+          </p>
+        {%- endif -%}
+
+        {%- unless product.has_only_default_variant -%}
+          <div class="product-info__variants">
+            {%- for option in product.options_with_values -%}
+              <div class="product-option" data-option-index="{{ forloop.index0 }}">
+                <label class="product-option__label">
+                  {{ option.name }}:
+                  <span class="product-option__selected" data-option-value="{{ forloop.index0 }}">
+                    {{ option.selected_value }}
+                  </span>
+                </label>
+
+                {%- if option.name == 'Color' or option.name == 'Colour' -%}
+                  <div class="product-option__colors" role="group" aria-label="{{ option.name }}">
+                    {%- for value in option.values -%}
+                      {%- assign variant_image = blank -%}
+                      {%- for variant in product.variants -%}
+                        {%- if variant.option1 == value or variant.option2 == value or variant.option3 == value -%}
+                          {%- if variant.image -%}
+                            {%- assign variant_image = variant.image -%}
+                            {%- break -%}
+                          {%- endif -%}
+                        {%- endif -%}
+                      {%- endfor -%}
+                      <button
+                        class="product-option__color-swatch{% if option.selected_value == value %} is-selected{% endif %}"
+                        data-option-index="{{ forloop.parentloop.index0 }}"
+                        data-value="{{ value | escape }}"
+                        aria-label="{{ value }}"
+                        aria-pressed="{{ option.selected_value == value }}"
+                        title="{{ value }}"
+                      >
+                        {%- if variant_image != blank -%}
+                          {{
+                            variant_image
+                            | image_url: width: 80
+                            | image_tag: loading: 'lazy', alt: value, class: 'product-option__color-img', widths: '40, 60, 80'
+                          }}
+                        {%- else -%}
+                          <span class="product-option__color-dot" style="background-color: {{ value | downcase | replace: ' ', '' }};"></span>
+                        {%- endif -%}
+                      </button>
+                    {%- endfor -%}
+                  </div>
+
+                {%- elsif option.name == 'Size' -%}
+                  <div class="product-option__sizes" role="group" aria-label="{{ option.name }}">
+                    {%- for value in option.values -%}
+                      <button
+                        class="product-option__size{% if option.selected_value == value %} is-selected{% endif %}"
+                        data-option-index="{{ forloop.parentloop.index0 }}"
+                        data-value="{{ value | escape }}"
+                        aria-pressed="{{ option.selected_value == value }}"
+                      >
+                        {{ value }}
+                      </button>
+                    {%- endfor -%}
+                  </div>
+
+                {%- else -%}
+                  <div class="product-option__select-wrap">
+                    <select
+                      class="select product-option__select"
+                      name="options[{{ option.name | escape }}]"
+                      data-option-index="{{ forloop.index0 }}"
+                      aria-label="{{ option.name }}"
+                    >
+                      {%- for value in option.values -%}
+                        <option value="{{ value | escape }}"{% if option.selected_value == value %} selected{% endif %}>
+                          {{ value }}
+                        </option>
+                      {%- endfor -%}
+                    </select>
+                  </div>
+                {%- endif -%}
+              </div>
+            {%- endfor -%}
+          </div>
+        {%- endunless -%}
+
+        <product-form>
+          {%- form 'product', product, id: 'product-form', data-product-form: '' -%}
+            <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}" data-variant-id>
+
+            <div class="product-info__atc">
+              <div class="product-info__qty">
+                <button type="button" class="qty-btn" data-qty-change="-1" aria-label="Decrease quantity">−</button>
+                <input type="number" name="quantity" value="1" min="1" class="qty-input" aria-label="Quantity">
+                <button type="button" class="qty-btn" data-qty-change="1" aria-label="Increase quantity">+</button>
+              </div>
+
+              <button
+                type="submit"
+                class="btn btn--primary btn--lg product-info__atc-btn"
+                data-add-to-cart
+                {%- unless product.selected_or_first_available_variant.available -%}disabled{%- endunless -%}
+              >
+                {%- if product.selected_or_first_available_variant.available -%}
+                  Add to Cart
+                {%- else -%}
+                  Sold Out
+                {%- endif -%}
+              </button>
+            </div>
+
+            <a href="{{ routes.checkout_url }}?variant={{ product.selected_or_first_available_variant.id }}" class="btn btn--outlined btn--lg btn--full product-info__buy-now">
+              Buy It Now
+            </a>
+          {%- endform -%}
+        </product-form>
+
+        {%- if section.settings.show_trust_badges -%}
+          <div class="product-info__trust">
+            <div class="trust-badge">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+              <span>Secure Checkout</span>
+            </div>
+            <div class="trust-badge">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
+              </svg>
+              <span>Free Shipping $200+</span>
+            </div>
+            <div class="trust-badge">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/>
+              </svg>
+              <span>Easy Returns</span>
+            </div>
+          </div>
+        {%- endif -%}
+
+        {%- comment -%} Description {%- endcomment -%}
+        {%- if product.description != blank -%}
+          <div class="product-info__description rte">
+            {{ product.description }}
+          </div>
+        {%- endif -%}
+
+        {%- comment -%} Accordion Sections {%- endcomment -%}
+        <div class="product-accordions">
+          {%- for block in section.blocks -%}
+            {%- if block.type == 'accordion' -%}
+              <details class="accordion" {{ block.shopify_attributes }}>
+                <summary class="accordion__trigger">
+                  {{ block.settings.heading }}
+                  <span class="accordion__icon" aria-hidden="true">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                      <polyline points="6 9 12 15 18 9"/>
+                    </svg>
+                  </span>
+                </summary>
+                <div class="accordion__content rte">
+                  {{ block.settings.content }}
+                </div>
+              </details>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+{%- comment -%} Customer Reviews {%- endcomment -%}
+{%- if section.settings.show_reviews -%}
+  <div class="product-reviews section container">
+    <div class="section-header">
+      <h2 class="section-heading">Customer Reviews</h2>
+      {%- render 'star-rating', rating: 4.8, review_count: 127 -%}
+    </div>
+
+    <div class="reviews-grid">
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'review' -%}
+          <div class="review-card" {{ block.shopify_attributes }}>
+            {%- if block.settings.image != blank -%}
+              <div class="review-card__image-wrap">
+                {{
+                  block.settings.image
+                  | image_url: width: 400
+                  | image_tag:
+                    loading: 'lazy',
+                    class: 'review-card__image',
+                    alt: block.settings.reviewer_name | default: 'Customer photo',
+                    widths: '200, 300, 400'
+                }}
+              </div>
+            {%- endif -%}
+            <div class="review-card__content">
+              {%- render 'star-rating', rating: block.settings.rating | default: 5, show_count: false -%}
+              {%- if block.settings.heading != blank -%}
+                <h4 class="review-card__heading">{{ block.settings.heading }}</h4>
+              {%- endif -%}
+              {%- if block.settings.text != blank -%}
+                <p class="review-card__text">{{ block.settings.text }}</p>
+              {%- endif -%}
+              <div class="review-card__meta">
+                <span class="review-card__name">{{ block.settings.reviewer_name | default: 'Anonymous' }}</span>
+                {%- if block.settings.verified -%}
+                  <span class="review-card__verified">Verified Purchase</span>
+                {%- endif -%}
+              </div>
+            </div>
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+  </div>
+{%- endif -%}
+
+{%- comment -%} Related Products {%- endcomment -%}
+{%- if section.settings.show_related -%}
+  {%- assign related = collections[product.collections.first.handle].products | where: 'id', product.id | map: 'id' -%}
+  <div class="related-products section container">
+    <div class="section-header">
+      <h2 class="section-heading">You May Also Like</h2>
+    </div>
+    <ul class="product-grid product-grid--4-col" role="list">
+      {%- for related_product in collections[product.collections.first.handle].products limit: 4 -%}
+        {%- unless related_product.id == product.id -%}
+          <li class="product-grid__item">
+            {%- render 'product-card', product: related_product -%}
+          </li>
+        {%- endunless -%}
+      {%- endfor -%}
+    </ul>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Product",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_installments",
+      "label": "Show installment payment option",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_trust_badges",
+      "label": "Show trust badges",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_reviews",
+      "label": "Show customer reviews",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_related",
+      "label": "Show related products",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "accordion",
+      "name": "Accordion",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Details"
+        },
+        {
+          "type": "richtext",
+          "id": "content",
+          "label": "Content"
+        }
+      ]
+    },
+    {
+      "type": "review",
+      "name": "Review",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Customer photo"
+        },
+        {
+          "type": "range",
+          "id": "rating",
+          "label": "Rating",
+          "min": 1,
+          "max": 5,
+          "step": 1,
+          "default": 5
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Review title"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "Review text"
+        },
+        {
+          "type": "text",
+          "id": "reviewer_name",
+          "label": "Reviewer name"
+        },
+        {
+          "type": "checkbox",
+          "id": "verified",
+          "label": "Verified purchase",
+          "default": true
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product",
+      "blocks": [
+        {
+          "type": "accordion",
+          "settings": {
+            "heading": "Materials",
+            "content": "<p>Premium water-resistant nylon with gold-tone hardware. Interior: microfiber lining with zip pocket and card slots.</p>"
+          }
+        },
+        {
+          "type": "accordion",
+          "settings": {
+            "heading": "Size & Fit",
+            "content": "<p>Height: 28cm | Width: 36cm | Depth: 12cm | Strap drop: 22cm adjustable</p>"
+          }
+        },
+        {
+          "type": "accordion",
+          "settings": {
+            "heading": "Shipping & Returns",
+            "content": "<p>Free standard shipping on orders over $200. Express shipping available. Returns accepted within 30 days of purchase in original condition.</p>"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

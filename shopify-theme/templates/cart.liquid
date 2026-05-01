@@ -1,0 +1,111 @@
+<div class="cart-page section container">
+  <div class="cart-page__header">
+    <h1 class="cart-page__title">Shopping Cart</h1>
+    {%- if cart.item_count > 0 -%}
+      <p class="cart-page__count">{{ cart.item_count }} item{% if cart.item_count != 1 %}s{% endif %}</p>
+    {%- endif -%}
+  </div>
+
+  {%- if cart.item_count > 0 -%}
+    <form action="{{ routes.cart_url }}" method="post" id="cart-form" class="cart-page__form">
+      <div class="cart-page__layout">
+        <div class="cart-page__items">
+          {%- for item in cart.items -%}
+            <div class="cart-page-item">
+              <div class="cart-page-item__media">
+                {%- if item.image -%}
+                  <a href="{{ item.url }}">
+                    {{
+                      item.image
+                      | image_url: width: 300
+                      | image_tag:
+                        loading: 'lazy',
+                        class: 'cart-page-item__image',
+                        alt: item.image.alt | default: item.title,
+                        widths: '150, 200, 300'
+                    }}
+                  </a>
+                {%- endif -%}
+              </div>
+
+              <div class="cart-page-item__details">
+                <div class="cart-page-item__top">
+                  <div>
+                    <a href="{{ item.url }}" class="cart-page-item__title">{{ item.product.title }}</a>
+                    {%- unless item.variant.title == 'Default Title' -%}
+                      <p class="cart-page-item__variant">{{ item.variant.title }}</p>
+                    {%- endunless -%}
+                  </div>
+                  <p class="cart-page-item__price">{{ item.line_price | money }}</p>
+                </div>
+
+                <div class="cart-page-item__bottom">
+                  <div class="cart-item__qty">
+                    <button type="button" class="cart-item__qty-btn" data-qty-input="{{ forloop.index0 }}" data-change="-1">−</button>
+                    <input
+                      type="number"
+                      name="updates[]"
+                      value="{{ item.quantity }}"
+                      min="0"
+                      class="qty-input"
+                      id="qty-{{ forloop.index0 }}"
+                      aria-label="Quantity for {{ item.title }}"
+                    >
+                    <button type="button" class="cart-item__qty-btn" data-qty-input="{{ forloop.index0 }}" data-change="1">+</button>
+                  </div>
+                  <a href="{{ routes.cart_change_url }}?line={{ forloop.index }}&quantity=0" class="cart-page-item__remove">Remove</a>
+                </div>
+              </div>
+            </div>
+          {%- endfor -%}
+        </div>
+
+        <div class="cart-page__summary">
+          <div class="cart-summary">
+            <h2 class="cart-summary__title">Order Summary</h2>
+
+            <div class="cart-summary__line">
+              <span>Subtotal</span>
+              <span>{{ cart.total_price | money }}</span>
+            </div>
+
+            <div class="cart-summary__line cart-summary__line--note">
+              <span>Shipping & taxes calculated at checkout</span>
+            </div>
+
+            {%- if cart.cart_level_discount_applications.size > 0 -%}
+              {%- for discount in cart.cart_level_discount_applications -%}
+                <div class="cart-summary__line cart-summary__line--discount">
+                  <span>{{ discount.title }}</span>
+                  <span>-{{ discount.total_allocated_amount | money }}</span>
+                </div>
+              {%- endfor -%}
+            {%- endif -%}
+
+            <div class="cart-summary__actions">
+              <button type="submit" name="checkout" class="btn btn--primary btn--full btn--lg">
+                Proceed to Checkout
+              </button>
+              <a href="{{ routes.collections_url }}" class="btn btn--outlined btn--full">Continue Shopping</a>
+            </div>
+
+            <div class="cart-summary__payments">
+              {{ shop.enabled_payment_types | payment_type_svg_tag: class: 'payment-icon' }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  {%- else -%}
+    <div class="cart-empty">
+      <div class="cart-empty__content">
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.75">
+          <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>
+        </svg>
+        <h2 class="cart-empty__heading">Your cart is empty</h2>
+        <p class="cart-empty__text">Discover our collection of luxury puffer handbags.</p>
+        <a href="{{ routes.collections_url }}" class="btn btn--primary btn--lg">Shop Now</a>
+      </div>
+    </div>
+  {%- endif -%}
+</div>

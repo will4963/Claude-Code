@@ -1,0 +1,68 @@
+{
+  "sections": {
+    "main": {
+      "type": "product-template",
+      "blocks": {
+        "materials": {
+          "type": "accordion",
+          "settings": {
+            "heading": "Materials",
+            "content": "<p>Premium water-resistant nylon with gold-tone hardware. Interior: microfiber lining with zip pocket and two card slots. Dust bag included.</p>"
+          }
+        },
+        "size-fit": {
+          "type": "accordion",
+          "settings": {
+            "heading": "Size & Fit",
+            "content": "<p>Height: 28cm | Width: 36cm | Depth: 12cm<br>Strap drop: 22cm adjustable shoulder strap<br>Magnetic snap closure</p>"
+          }
+        },
+        "shipping": {
+          "type": "accordion",
+          "settings": {
+            "heading": "Shipping & Returns",
+            "content": "<p>Free standard shipping on orders over $200. Express 2-day shipping available. Returns accepted within 30 days of purchase in original, unworn condition with tags attached.</p>"
+          }
+        },
+        "review-1": {
+          "type": "review",
+          "settings": {
+            "rating": 5,
+            "heading": "Absolutely stunning",
+            "text": "This bag exceeded all my expectations. The quality is impeccable and it holds so much more than it looks. I've received so many compliments!",
+            "reviewer_name": "Sophie L.",
+            "verified": true
+          }
+        },
+        "review-2": {
+          "type": "review",
+          "settings": {
+            "rating": 5,
+            "heading": "My everyday luxury",
+            "text": "I was hesitant at first due to the price, but it's worth every penny. The puffer texture is gorgeous in person and the gold hardware elevates the entire look.",
+            "reviewer_name": "Isabelle M.",
+            "verified": true
+          }
+        },
+        "review-3": {
+          "type": "review",
+          "settings": {
+            "rating": 5,
+            "heading": "Lightweight perfection",
+            "text": "I travel a lot and this has become my go-to travel bag. Lightweight, spacious, and so chic. The water-resistant material saved me in the rain last week!",
+            "reviewer_name": "Camille R.",
+            "verified": true
+          }
+        }
+      },
+      "block_order": ["materials", "size-fit", "shipping", "review-1", "review-2", "review-3"],
+      "settings": {
+        "show_installments": true,
+        "show_trust_badges": true,
+        "show_reviews": true,
+        "show_related": true
+      }
+    }
+  },
+  "order": ["main"]
+}
