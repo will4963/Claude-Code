@@ -1,0 +1,232 @@
+<div class="collection-page">
+  <div class="collection-page__header">
+    <div class="container">
+      {%- if collection.image -%}
+        <div class="collection-header__media">
+          {{
+            collection.image
+            | image_url: width: 2000
+            | image_tag:
+              loading: 'eager',
+              class: 'collection-header__image',
+              sizes: '100vw',
+              widths: '750, 1100, 1500, 2000'
+          }}
+          <div class="collection-header__overlay"></div>
+        </div>
+      {%- endif -%}
+      <div class="collection-header__content">
+        <h1 class="collection-header__title">{{ collection.title }}</h1>
+        {%- if collection.description != blank -%}
+          <div class="collection-header__desc rte">{{ collection.description }}</div>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+
+  <div class="collection-page__body container">
+    <aside class="collection-sidebar" id="collection-sidebar" aria-label="Filters">
+      <div class="sidebar-header">
+        <h2 class="sidebar-header__title">Filter</h2>
+        <button class="sidebar-close" aria-label="Close filters" data-sidebar-close>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+
+      {%- for filter in collection.filters -%}
+        <div class="sidebar-filter">
+          <details class="sidebar-filter__group" open>
+            <summary class="sidebar-filter__heading">
+              {{ filter.label }}
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <polyline points="6 9 12 15 18 9"/>
+              </svg>
+            </summary>
+            <div class="sidebar-filter__options">
+              {%- if filter.type == 'price_range' -%}
+                <div class="price-filter">
+                  <div class="price-filter__inputs">
+                    <div class="price-filter__field">
+                      <label for="filter-price-min" class="price-filter__label">From</label>
+                      <div class="price-filter__input-wrap">
+                        <span class="price-filter__currency">{{ cart.currency.symbol }}</span>
+                        <input
+                          type="number"
+                          id="filter-price-min"
+                          name="{{ filter.min_value.param_name }}"
+                          value="{{ filter.min_value.value | divided_by: 100.0 | default: '' }}"
+                          placeholder="{{ filter.range_min | divided_by: 100.0 | ceil }}"
+                          class="input price-filter__input"
+                          min="{{ filter.range_min | divided_by: 100.0 | ceil }}"
+                          max="{{ filter.range_max | divided_by: 100.0 | floor }}"
+                        >
+                      </div>
+                    </div>
+                    <div class="price-filter__field">
+                      <label for="filter-price-max" class="price-filter__label">To</label>
+                      <div class="price-filter__input-wrap">
+                        <span class="price-filter__currency">{{ cart.currency.symbol }}</span>
+                        <input
+                          type="number"
+                          id="filter-price-max"
+                          name="{{ filter.max_value.param_name }}"
+                          value="{{ filter.max_value.value | divided_by: 100.0 | default: '' }}"
+                          placeholder="{{ filter.range_max | divided_by: 100.0 | floor }}"
+                          class="input price-filter__input"
+                          min="{{ filter.range_min | divided_by: 100.0 | ceil }}"
+                          max="{{ filter.range_max | divided_by: 100.0 | floor }}"
+                        >
+                      </div>
+                    </div>
+                  </div>
+                  <button type="submit" class="btn btn--primary price-filter__apply">Apply</button>
+                </div>
+
+              {%- elsif filter.type == 'list' -%}
+                <ul class="sidebar-filter__list">
+                  {%- for filter_value in filter.values -%}
+                    <li class="sidebar-filter__option">
+                      <label class="filter-checkbox" for="filter-{{ filter.label | handleize }}-{{ forloop.index }}">
+                        <input
+                          type="checkbox"
+                          id="filter-{{ filter.label | handleize }}-{{ forloop.index }}"
+                          name="{{ filter_value.param_name }}"
+                          value="{{ filter_value.value }}"
+                          class="filter-checkbox__input"
+                          {% if filter_value.active %}checked{% endif %}
+                          {% if filter_value.count == 0 and filter_value.active == false %}disabled{% endif %}
+                        >
+                        <span class="filter-checkbox__box"></span>
+                        <span class="filter-checkbox__label">
+                          {%- if filter.presentation == 'swatch' -%}
+                            <span class="filter-swatch" style="background-color: {{ filter_value.value | downcase | replace: ' ', '' }};"></span>
+                          {%- endif -%}
+                          {{ filter_value.label }}
+                          <span class="filter-checkbox__count">({{ filter_value.count }})</span>
+                        </span>
+                      </label>
+                    </li>
+                  {%- endfor -%}
+                </ul>
+              {%- endif -%}
+            </div>
+          </details>
+        </div>
+      {%- endfor -%}
+
+      {%- if collection.filters.size > 0 -%}
+        <a href="{{ collection.url }}" class="btn btn--outlined sidebar-filter__clear">Clear All</a>
+      {%- endif -%}
+    </aside>
+
+    <div class="collection-main">
+      <div class="collection-toolbar">
+        <button class="collection-toolbar__filter-btn" aria-label="Open filters" data-sidebar-open>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/>
+          </svg>
+          Filter
+          {%- if collection.filters.size > 0 -%}
+            {%- assign active_filters = 0 -%}
+            {%- for f in collection.filters -%}
+              {%- for v in f.values -%}
+                {%- if v.active -%}{%- assign active_filters = active_filters | plus: 1 -%}{%- endif -%}
+              {%- endfor -%}
+            {%- endfor -%}
+            {%- if active_filters > 0 -%}
+              <span class="collection-toolbar__filter-count">{{ active_filters }}</span>
+            {%- endif -%}
+          {%- endif -%}
+        </button>
+
+        <p class="collection-toolbar__count">
+          {{ collection.products_count }} product{% if collection.products_count != 1 %}s{% endif %}
+        </p>
+
+        <div class="collection-toolbar__sort">
+          <label for="sort-by" class="visually-hidden">Sort by</label>
+          <select id="sort-by" name="sort_by" class="select collection-toolbar__sort-select" data-sort-by>
+            {%- assign sort_by = collection.sort_by | default: collection.default_sort_by -%}
+            {%- for option in collection.sort_options -%}
+              <option value="{{ option.value }}"{% if option.value == sort_by %} selected{% endif %}>
+                {{ option.name }}
+              </option>
+            {%- endfor -%}
+          </select>
+        </div>
+      </div>
+
+      {%- paginate collection.products by section.settings.products_per_page -%}
+        {%- if collection.products.size > 0 -%}
+          <ul class="product-grid product-grid--3-col" role="list" id="product-grid">
+            {%- for product in collection.products -%}
+              <li class="product-grid__item" data-animate="fade-up" data-delay="{{ forloop.index0 | modulo: 3 | times: 80 }}">
+                {%- render 'product-card', product: product -%}
+              </li>
+            {%- endfor -%}
+          </ul>
+
+          {%- if paginate.pages > 1 -%}
+            <div class="pagination" role="navigation" aria-label="Pagination">
+              {%- if paginate.previous -%}
+                <a href="{{ paginate.previous.url }}" class="pagination__btn pagination__btn--prev" aria-label="Previous page">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <polyline points="15 18 9 12 15 6"/>
+                  </svg>
+                </a>
+              {%- endif -%}
+
+              <div class="pagination__pages">
+                {%- for part in paginate.parts -%}
+                  {%- if part.is_link -%}
+                    <a href="{{ part.url }}" class="pagination__page">{{ part.title }}</a>
+                  {%- elsif part.title == paginate.current_page -%}
+                    <span class="pagination__page pagination__page--current" aria-current="page">{{ part.title }}</span>
+                  {%- else -%}
+                    <span class="pagination__ellipsis">&hellip;</span>
+                  {%- endif -%}
+                {%- endfor -%}
+              </div>
+
+              {%- if paginate.next -%}
+                <a href="{{ paginate.next.url }}" class="pagination__btn pagination__btn--next" aria-label="Next page">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <polyline points="9 18 15 12 9 6"/>
+                  </svg>
+                </a>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+        {%- else -%}
+          <div class="collection-empty">
+            <p class="collection-empty__text">No products found. <a href="{{ collection.url }}">Clear filters</a></p>
+          </div>
+        {%- endif -%}
+      {%- endpaginate -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Collection",
+  "settings": [
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "label": "Products per page",
+      "min": 8,
+      "max": 48,
+      "step": 4,
+      "default": 24
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collection"
+    }
+  ]
+}
+{% endschema %}

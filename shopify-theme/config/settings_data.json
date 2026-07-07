@@ -1,0 +1,13 @@
+{
+  "current": {
+    "color_primary": "#1F3D34",
+    "color_secondary": "#0F0F0F",
+    "color_background": "#F5F1EC",
+    "color_accent": "#C6A96B",
+    "color_text": "#0F0F0F",
+    "type_heading_font": "playfair_display_n4",
+    "type_body_font": "inter_n4",
+    "type_base_size": 16,
+    "layout_max_width": 1320
+  }
+}

@@ -1,0 +1,90 @@
+<section class="feature-bar section">
+  <div class="container">
+    <ul class="feature-bar__list">
+      {%- for block in section.blocks -%}
+        <li class="feature-bar__item" {{ block.shopify_attributes }} data-animate="fade-up" data-delay="{{ forloop.index0 | times: 100 }}">
+          <div class="feature-bar__icon">
+            {%- case block.settings.icon -%}
+              {%- when 'lightweight' -%}
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
+                  <path d="M8 12l2 2 4-4"/>
+                </svg>
+              {%- when 'water' -%}
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>
+                </svg>
+              {%- when 'luxury' -%}
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                </svg>
+              {%- when 'spacious' -%}
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+                  <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+                </svg>
+              {%- else -%}
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <circle cx="12" cy="12" r="10"/>
+                  <path d="M12 8v4l3 3"/>
+                </svg>
+            {%- endcase -%}
+          </div>
+          <h3 class="feature-bar__title">{{ block.settings.title }}</h3>
+          {%- if block.settings.description != blank -%}
+            <p class="feature-bar__desc">{{ block.settings.description }}</p>
+          {%- endif -%}
+        </li>
+      {%- endfor -%}
+    </ul>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Feature Bar",
+  "tag": "section",
+  "blocks": [
+    {
+      "type": "feature",
+      "name": "Feature",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "lightweight", "label": "Lightweight" },
+            { "value": "water", "label": "Water Resistant" },
+            { "value": "luxury", "label": "Luxury" },
+            { "value": "spacious", "label": "Spacious" }
+          ],
+          "default": "luxury"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Feature Title"
+        },
+        {
+          "type": "text",
+          "id": "description",
+          "label": "Description"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Feature Bar",
+      "blocks": [
+        { "type": "feature", "settings": { "icon": "lightweight", "title": "Lightweight Comfort", "description": "Featherlight design for all-day wear" } },
+        { "type": "feature", "settings": { "icon": "water", "title": "Water-Resistant", "description": "Protected against the unexpected" } },
+        { "type": "feature", "settings": { "icon": "luxury", "title": "Everyday Luxury", "description": "Premium materials, refined details" } },
+        { "type": "feature", "settings": { "icon": "spacious", "title": "Spacious Design", "description": "Room for everything that matters" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

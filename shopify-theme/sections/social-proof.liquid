@@ -1,0 +1,118 @@
+<section class="social-proof section" id="social-proof">
+  <div class="container">
+    <div class="section-header" data-animate="fade-up">
+      {%- if section.settings.heading != blank -%}
+        <h2 class="section-heading">{{ section.settings.heading }}</h2>
+      {%- endif -%}
+      {%- if section.settings.subheading != blank -%}
+        <p class="section-subheading">{{ section.settings.subheading }}</p>
+      {%- endif -%}
+      {%- if section.settings.instagram_handle != blank -%}
+        <a href="https://instagram.com/{{ section.settings.instagram_handle | remove: '@' }}" class="social-proof__handle" target="_blank" rel="noopener noreferrer">
+          @{{ section.settings.instagram_handle | remove: '@' }}
+        </a>
+      {%- endif -%}
+    </div>
+
+    <div class="instagram-grid" role="list">
+      {%- for block in section.blocks -%}
+        <div class="instagram-grid__item" {{ block.shopify_attributes }} role="listitem" data-animate="fade-up" data-delay="{{ forloop.index0 | times: 60 }}">
+          {%- if block.settings.link != blank -%}
+            <a href="{{ block.settings.link }}" class="instagram-grid__link" target="_blank" rel="noopener noreferrer" aria-label="View on Instagram">
+          {%- endif -%}
+          <div class="instagram-grid__media">
+            {%- if block.settings.image != blank -%}
+              {{
+                block.settings.image
+                | image_url: width: 600
+                | image_tag:
+                  loading: 'lazy',
+                  class: 'instagram-grid__image',
+                  alt: block.settings.alt_text | default: 'ShopAriX Instagram',
+                  sizes: '(max-width: 768px) 50vw, 20vw',
+                  widths: '200, 300, 400, 600'
+              }}
+            {%- else -%}
+              <div class="instagram-grid__placeholder">
+                {{ 'image' | placeholder_svg_tag: 'instagram-grid__placeholder-svg' }}
+              </div>
+            {%- endif -%}
+            <div class="instagram-grid__overlay">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5" stroke="white" stroke-width="1.5" fill="none"/>
+                <circle cx="12" cy="12" r="4" stroke="white" stroke-width="1.5" fill="none"/>
+                <circle cx="17.5" cy="6.5" r="1.5" fill="white"/>
+              </svg>
+            </div>
+          </div>
+          {%- if block.settings.link != blank -%}
+            </a>
+          {%- endif -%}
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Social Proof",
+  "tag": "section",
+  "max_blocks": 8,
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "As Seen On Instagram"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Tag us to be featured"
+    },
+    {
+      "type": "text",
+      "id": "instagram_handle",
+      "label": "Instagram handle",
+      "default": "@shoparix"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "photo",
+      "name": "Photo",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "alt_text",
+          "label": "Alt text"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Social Proof",
+      "blocks": [
+        { "type": "photo" },
+        { "type": "photo" },
+        { "type": "photo" },
+        { "type": "photo" },
+        { "type": "photo" }
+      ]
+    }
+  ]
+}
+{% endschema %}

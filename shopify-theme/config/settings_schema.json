@@ -1,0 +1,115 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "ShopAriX Luxury",
+    "theme_version": "1.0.0",
+    "theme_author": "ShopAriX",
+    "theme_documentation_url": "",
+    "theme_support_url": ""
+  },
+  {
+    "name": "Colors",
+    "settings": [
+      {
+        "type": "color",
+        "id": "color_primary",
+        "label": "Primary color (Forest Green)",
+        "default": "#1F3D34"
+      },
+      {
+        "type": "color",
+        "id": "color_secondary",
+        "label": "Secondary color (Matte Black)",
+        "default": "#0F0F0F"
+      },
+      {
+        "type": "color",
+        "id": "color_background",
+        "label": "Background color (Beige)",
+        "default": "#F5F1EC"
+      },
+      {
+        "type": "color",
+        "id": "color_accent",
+        "label": "Accent color (Gold)",
+        "default": "#C6A96B"
+      },
+      {
+        "type": "color",
+        "id": "color_text",
+        "label": "Body text color",
+        "default": "#0F0F0F"
+      }
+    ]
+  },
+  {
+    "name": "Typography",
+    "settings": [
+      {
+        "type": "font_picker",
+        "id": "type_heading_font",
+        "label": "Headings font",
+        "default": "playfair_display_n4"
+      },
+      {
+        "type": "font_picker",
+        "id": "type_body_font",
+        "label": "Body font",
+        "default": "inter_n4"
+      },
+      {
+        "type": "range",
+        "id": "type_base_size",
+        "label": "Base font size (px)",
+        "min": 14,
+        "max": 18,
+        "step": 1,
+        "default": 16
+      }
+    ]
+  },
+  {
+    "name": "Layout",
+    "settings": [
+      {
+        "type": "range",
+        "id": "layout_max_width",
+        "label": "Max content width (px)",
+        "min": 960,
+        "max": 1440,
+        "step": 20,
+        "default": 1320
+      }
+    ]
+  },
+  {
+    "name": "Favicon",
+    "settings": [
+      {
+        "type": "image_picker",
+        "id": "favicon",
+        "label": "Favicon image"
+      }
+    ]
+  },
+  {
+    "name": "Social Media",
+    "settings": [
+      {
+        "type": "text",
+        "id": "social_instagram_link",
+        "label": "Instagram URL"
+      },
+      {
+        "type": "text",
+        "id": "social_tiktok_link",
+        "label": "TikTok URL"
+      },
+      {
+        "type": "text",
+        "id": "social_pinterest_link",
+        "label": "Pinterest URL"
+      }
+    ]
+  }
+]

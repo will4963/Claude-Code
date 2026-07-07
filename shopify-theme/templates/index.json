@@ -1,0 +1,89 @@
+{
+  "sections": {
+    "hero": {
+      "type": "hero",
+      "settings": {
+        "eyebrow": "New Arrivals",
+        "heading": "<p>Soft Power.<br>Bold Presence.</p>",
+        "subtext": "Luxury redefined through comfort.",
+        "cta_label": "Shop Collection"
+      }
+    },
+    "feature-bar": {
+      "type": "feature-bar",
+      "blocks": {
+        "block-1": {
+          "type": "feature",
+          "settings": {
+            "icon": "lightweight",
+            "title": "Lightweight Comfort",
+            "description": "Featherlight design for all-day wear"
+          }
+        },
+        "block-2": {
+          "type": "feature",
+          "settings": {
+            "icon": "water",
+            "title": "Water-Resistant",
+            "description": "Protected against the unexpected"
+          }
+        },
+        "block-3": {
+          "type": "feature",
+          "settings": {
+            "icon": "luxury",
+            "title": "Everyday Luxury",
+            "description": "Premium materials, refined details"
+          }
+        },
+        "block-4": {
+          "type": "feature",
+          "settings": {
+            "icon": "spacious",
+            "title": "Spacious Design",
+            "description": "Room for everything that matters"
+          }
+        }
+      },
+      "block_order": ["block-1", "block-2", "block-3", "block-4"]
+    },
+    "best-sellers": {
+      "type": "best-sellers",
+      "settings": {
+        "eyebrow": "Our Favorites",
+        "heading": "Best Sellers",
+        "products_to_show": 4,
+        "columns": "4",
+        "show_view_all": true,
+        "view_all_label": "View All Bags"
+      }
+    },
+    "editorial": {
+      "type": "editorial",
+      "settings": {
+        "layout": "image_left",
+        "eyebrow": "The ShopAriX Story",
+        "heading": "<p>Designed to be seen.<br>Built to be felt.</p>",
+        "text": "<p>Every ShopAriX piece begins with a woman in mind — one who moves through the world with purpose, elegance, and ease. Our puffer handbags are more than accessories; they are a quiet declaration of taste.</p>",
+        "cta_label": "Discover More"
+      }
+    },
+    "social-proof": {
+      "type": "social-proof",
+      "blocks": {
+        "photo-1": { "type": "photo" },
+        "photo-2": { "type": "photo" },
+        "photo-3": { "type": "photo" },
+        "photo-4": { "type": "photo" },
+        "photo-5": { "type": "photo" }
+      },
+      "block_order": ["photo-1", "photo-2", "photo-3", "photo-4", "photo-5"],
+      "settings": {
+        "heading": "As Seen On Instagram",
+        "subheading": "Tag us to be featured",
+        "instagram_handle": "@shoparix"
+      }
+    }
+  },
+  "order": ["hero", "feature-bar", "best-sellers", "editorial", "social-proof"]
+}
