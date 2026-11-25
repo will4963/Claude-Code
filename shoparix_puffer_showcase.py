@@ -7,14 +7,21 @@ Render the video: Render > Render Animation (Ctrl+F12). MP4 is saved next to you
 
 WARNING: clears the objects in the current scene first - use a new file.
 
-Shots (30 fps, 12 s):
-  1  Hero push-in on the front         frames   1-75
-  2  3/4 orbit around the bag          frames  76-150
-  3  Macro slide across the quilting   frames 151-210
-  4  Low-angle tilt up to the handle   frames 211-270
-  5  360 turntable + ShopAriX title    frames 271-360
+LOGO: put ShopAriX_logo_gold.png in your Downloads folder, on your Desktop, or next to your
+saved .blend - or paste its full path into LOGO_PATH below. If it is not found, a gold
+"ShopAriX" 3D text is used in its place.
+
+Shots (30 fps, 14 s):
+  0  ShopAriX logo intro               frames   1-60
+  1  Hero push-in on the front         frames  61-135
+  2  3/4 orbit around the bag          frames 136-210
+  3  Macro slide across the quilting   frames 211-270
+  4  Low-angle tilt up to the handle   frames 271-330
+  5  360 turntable + ShopAriX title    frames 331-420
 """
 import bpy, bmesh, math, os
+
+LOGO_PATH = ""   # optional: full path to ShopAriX_logo_gold.png, e.g. r"C:\Users\you\Downloads\ShopAriX_logo_gold.png"
 from mathutils import Vector
 from mathutils.bvhtree import BVHTree
 
@@ -198,8 +205,9 @@ scene.objects["Wall"].light_linking.receiver_collection = bg
 #  ANIMATION: camera angles showcasing the product
 # =====================================================================
 FPS, END = 30, 360
+INTRO = 60                      # 2 s logo intro; every product shot starts after it
 scene.render.fps = FPS
-scene.frame_start, scene.frame_end = 1, END
+scene.frame_start, scene.frame_end = 1, END + INTRO
 for m in list(scene.timeline_markers):
     scene.timeline_markers.remove(m)
 
@@ -217,11 +225,81 @@ def camera(name, lens, target, loc=(0, 0, 0), fstop=None):
     tc_.track_axis = 'TRACK_NEGATIVE_Z'; tc_.up_axis = 'UP_Y'
     return c
 
-def key(ob, path, frame, value):
+def key_abs(ob, path, frame, value):
     setattr(ob, path, value); ob.keyframe_insert(data_path=path, frame=frame)
 
-def cut(name, frame, cam):
-    m = scene.timeline_markers.new(name, frame=frame); m.camera = cam
+def key(ob, path, frame, value):            # product-shot frames, shifted after the intro
+    key_abs(ob, path, frame + INTRO, value)
+
+def cut(name, frame, cam, offset=True):
+    m = scene.timeline_markers.new(name, frame=frame + (INTRO if offset else 0)); m.camera = cam
+
+# --- Shot 0: ShopAriX logo intro (its own little stage, off to the side) ---
+LX = 3.0                                     # logo stage sits 3 m to the right, out of the bag shots
+def find_logo():
+    names = ["ShopAriX_logo_gold.png", "ShopAriX-SX-3D-v2-extruded-gold.png"]
+    dirs = [os.path.dirname(LOGO_PATH)] if LOGO_PATH else []
+    if bpy.data.filepath:
+        dirs.append(os.path.dirname(bpy.data.filepath))
+    home = os.path.expanduser("~")
+    dirs += [os.path.join(home, "Downloads"), os.path.join(home, "Desktop"), home]
+    if LOGO_PATH and os.path.isfile(LOGO_PATH):
+        return LOGO_PATH
+    for d_ in dirs:
+        for n_ in names:
+            f_ = os.path.join(d_, n_)
+            if os.path.isfile(f_):
+                return f_
+    return None
+
+logo_file = find_logo()
+gold = bpy.data.materials.new("ShopAriX_Logo"); gold.use_nodes = True
+gnt = gold.node_tree; gnt.nodes.clear()
+g_out = gnt.nodes.new("ShaderNodeOutputMaterial")
+if logo_file:
+    img = bpy.data.images.load(logo_file, check_existing=True)
+    img.pack()                               # keep the logo inside the .blend
+    aspect = img.size[0] / max(1, img.size[1])
+    tex = gnt.nodes.new("ShaderNodeTexImage"); tex.image = img
+    emi = gnt.nodes.new("ShaderNodeEmission")
+    trn = gnt.nodes.new("ShaderNodeBsdfTransparent")
+    mix = gnt.nodes.new("ShaderNodeMixShader")
+    gnt.links.new(tex.outputs["Color"], emi.inputs["Color"])
+    gnt.links.new(tex.outputs["Alpha"], mix.inputs["Fac"])
+    gnt.links.new(trn.outputs[0], mix.inputs[1]); gnt.links.new(emi.outputs[0], mix.inputs[2])
+    gnt.links.new(mix.outputs[0], g_out.inputs["Surface"])
+    bpy.ops.mesh.primitive_plane_add(size=1.0, location=(LX, 0, 0.36), rotation=(math.radians(90), 0, 0))
+    logo = bpy.context.object; logo.name = "ShopAriX_Logo"
+    logo.dimensions = (0.30 * aspect, 0.30, 0)
+    bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
+    logo.data.materials.append(gold)
+    glint = emi.inputs["Strength"]
+    print("ShopAriX logo loaded:", logo_file)
+else:
+    print("Logo PNG not found - using gold 3D text. Set LOGO_PATH at the top of the script.")
+    bsd = gnt.nodes.new("ShaderNodeBsdfPrincipled")
+    bsd.inputs["Base Color"].default_value = (0.75, 0.52, 0.18, 1)
+    bsd.inputs["Metallic"].default_value = 1.0; bsd.inputs["Roughness"].default_value = 0.25
+    gnt.links.new(bsd.outputs[0], g_out.inputs["Surface"])
+    cu = bpy.data.curves.new("ShopAriX_Logo", 'FONT'); cu.body = "ShopAriX"; cu.size = 0.16
+    cu.align_x = 'CENTER'; cu.align_y = 'CENTER'; cu.extrude = 0.012; cu.bevel_depth = 0.002
+    logo = bpy.data.objects.new("ShopAriX_Logo", cu); scene.collection.objects.link(logo)
+    logo.location = (LX, 0, 0.36); logo.rotation_euler = (math.radians(90), 0, 0)
+    logo.data.materials.append(gold)
+    glint = bsd.inputs["Emission Strength"]
+    bsd.inputs["Emission Color"].default_value = (1.0, 0.75, 0.35, 1)
+
+# reveal: rises, turns to camera and grows; a gold glint peaks as it settles
+key_abs(logo, "scale", 1, (0.55, 0.55, 0.55)); key_abs(logo, "scale", 42, (1, 1, 1))
+key_abs(logo, "rotation_euler", 1, (math.radians(90), 0, math.radians(-35)))
+key_abs(logo, "rotation_euler", 42, (math.radians(90), 0, 0))
+key_abs(logo, "location", 1, (LX, 0, 0.30)); key_abs(logo, "location", 42, (LX, 0, 0.36))
+for f_, v_ in ((1, 0.15 if logo_file else 0.0), (36, 1.6 if logo_file else 0.8), (52, 1.0 if logo_file else 0.0)):
+    glint.default_value = v_; glint.keyframe_insert("default_value", frame=f_)
+t0 = empty("T_Logo", (LX, 0, 0.36))
+c0 = camera("CAM_0_Logo", 60, t0)
+key_abs(c0, "location", 1, (LX, -1.55, 0.40)); key_abs(c0, "location", 60, (LX, -1.40, 0.38))
+cut("0 Logo", 1, c0, offset=False)
 
 # --- Shot 1: hero push-in on the front ---
 t1 = empty("T_Hero", (0, 0, 0.25))
@@ -280,7 +358,7 @@ def title(txt, size, z, name):
 title("ShopAriX", 0.10, 0.66, "Title_ShopAriX")
 title("Puffer Handbag for Women", 0.036, 0.585, "Title_Subtitle")
 
-scene.camera = c1
+scene.camera = c0
 scene.frame_set(1)
 
 # --- render settings: 1080p MP4 ---
