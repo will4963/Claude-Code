@@ -1,0 +1,143 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link rel="stylesheet" href="fonts.css">
+<style>
+:root{--cream:#f6f4ee;--ink:#000;--ash:#616161;--forest:#2f4638;--midnight:#231f20;--caramel:#b56c4b;--storm:#6a666b;--greige:#dfded6;--hair:#cacaca}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1080px;height:1920px;overflow:hidden;background:var(--cream)}
+body{font-family:'Inter Tight',Inter,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased}
+.scene{position:absolute;inset:0;opacity:0}
+.label{font-size:26px;letter-spacing:.12em;text-transform:uppercase;font-weight:400}
+.display{font-size:104px;line-height:.97;letter-spacing:-1.6px;font-weight:400}
+.body{font-size:40px;line-height:1.3;font-weight:400;color:var(--ash)}
+.word{font-family:'Bodoni Moda',serif;font-weight:500}
+.frame{position:absolute;left:60px;width:960px;height:960px;overflow:hidden;background:var(--greige)}
+.frame img{width:100%;height:100%;object-fit:cover;display:block;transform-origin:50% 50%}
+.hair{position:absolute;left:60px;right:60px;height:2px;background:var(--ink)}
+.pill{display:inline-flex;align-items:center;gap:18px;border:2px solid var(--ink);border-radius:9999px;padding:22px 44px}
+.dot{width:28px;height:28px;border-radius:50%}
+.new{background:var(--forest);color:#fff;border-radius:9999px;padding:10px 24px;font-size:24px;letter-spacing:.12em}
+.up{display:block}
+</style></head>
+<body>
+
+<!-- S1 logo -->
+<div class="scene" id="s1">
+  <img id="logo" src="logo.png" style="position:absolute;left:50%;top:620px;width:560px;margin-left:-280px">
+  <div id="wm" class="word" style="position:absolute;top:1180px;width:100%;text-align:center;font-size:96px;letter-spacing:2px">ShopArix</div>
+  <div id="wl" class="label" style="position:absolute;top:1320px;width:100%;text-align:center">The Puffer Collection</div>
+</div>
+
+<!-- S2 hero midnight -->
+<div class="scene" id="s2">
+  <div style="position:absolute;top:150px;left:60px;display:flex;gap:20px;align-items:center"><span class="new">NEW</span><span class="label">Puffer Handbag</span></div>
+  <div class="frame" style="top:260px"><img id="i2" src="p9.jpg"></div>
+  <div style="position:absolute;top:1300px;left:60px">
+    <div class="display"><span class="up" id="t2a">Soft.</span><span class="up" id="t2b">Quilted.</span><span class="up" id="t2c">Yours.</span></div>
+  </div>
+</div>
+
+<!-- S3 side profile -->
+<div class="scene" id="s3">
+  <div class="label" style="position:absolute;top:150px;left:60px">The Silhouette</div>
+  <div class="frame" style="top:260px"><img id="i3" src="p8.jpg"></div>
+  <div style="position:absolute;top:1300px;left:60px;width:960px">
+    <div class="display" id="t3a">Pillowy from<br>every angle.</div>
+  </div>
+</div>
+
+<!-- S4 interior -->
+<div class="scene" id="s4">
+  <div class="label" style="position:absolute;top:150px;left:60px">Inside</div>
+  <div class="frame" style="top:260px"><img id="i4" src="p7.jpg"></div>
+  <div style="position:absolute;top:1300px;left:60px;width:960px">
+    <div class="display" id="t4a">Room for<br>everything.</div>
+    <div class="body" id="t4b" style="margin-top:36px">A roomy interior and a front zip pocket.</div>
+  </div>
+</div>
+
+<!-- S5 colorways -->
+<div class="scene" id="s5">
+  <div class="label" style="position:absolute;top:150px;left:60px">Four Colorways</div>
+  <div class="frame" style="top:260px">
+    <img class="cw" src="p1.jpg" style="position:absolute;inset:0">
+    <img class="cw" src="p2.jpg" style="position:absolute;inset:0">
+    <img class="cw" src="p3.jpg" style="position:absolute;inset:0">
+    <img class="cw" src="p11.jpg" style="position:absolute;inset:0">
+  </div>
+  <div style="position:absolute;top:1300px;left:60px;width:960px;height:120px">
+    <div class="display cwn" style="position:absolute">Storm Grey</div>
+    <div class="display cwn" style="position:absolute">Caramel</div>
+    <div class="display cwn" style="position:absolute">Forest</div>
+    <div class="display cwn" style="position:absolute">Midnight</div>
+  </div>
+  <div style="position:absolute;top:1500px;left:60px;display:flex;gap:28px">
+    <div class="dot sw" style="background:var(--storm)"></div><div class="dot sw" style="background:var(--caramel)"></div><div class="dot sw" style="background:var(--forest)"></div><div class="dot sw" style="background:var(--midnight)"></div>
+  </div>
+</div>
+
+<!-- S6 on body -->
+<div class="scene" id="s6">
+  <div class="label" style="position:absolute;top:150px;left:60px">Two Ways to Carry</div>
+  <div class="frame" style="top:260px;height:620px"><img id="i6a" src="p4.jpg" style="object-position:50% 45%"></div>
+  <div class="frame" style="top:900px;height:620px"><img id="i6b" src="p5.jpg"></div>
+  <div style="position:absolute;top:1580px;left:60px;width:960px">
+    <div class="display" id="t6a" style="font-size:84px">In hand. On shoulder.</div>
+  </div>
+</div>
+
+<!-- S7 end card -->
+<div class="scene" id="s7">
+  <div id="grid" style="position:absolute;top:140px;left:60px;width:960px;display:grid;grid-template-columns:1fr 1fr;gap:12px">
+    <div style="aspect-ratio:1;overflow:hidden;background:var(--greige)"><img src="p1.jpg" style="width:100%;height:100%;object-fit:cover"></div>
+    <div style="aspect-ratio:1;overflow:hidden;background:var(--greige)"><img src="p2.jpg" style="width:100%;height:100%;object-fit:cover"></div>
+    <div style="aspect-ratio:1;overflow:hidden;background:var(--greige)"><img src="p3.jpg" style="width:100%;height:100%;object-fit:cover"></div>
+    <div style="aspect-ratio:1;overflow:hidden;background:var(--greige)"><img src="p9.jpg" style="width:100%;height:100%;object-fit:cover"></div>
+  </div>
+  <div id="endtxt" style="position:absolute;top:1170px;width:100%;text-align:center">
+    <img src="logo.png" style="width:170px;display:block;margin:0 auto 24px">
+    <div class="word" style="font-size:88px">ShopArix</div>
+    <div class="label" style="margin-top:20px;color:var(--ash)">Puffer handbags for women</div>
+    <div class="pill label" id="cta" style="margin-top:64px;font-weight:600">Shop the Collection <span style="font-size:30px">&rarr;</span></div>
+  </div>
+</div>
+
+<script>
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const cl=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
+const ease=x=>{x=cl(x);return 1-Math.pow(1-x,3)};
+const io=x=>{x=cl(x);return x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2};
+// scene windows [start,end], crossfade 0.5s
+const W={s1:[0,3.6],s2:[3.4,8.0],s3:[7.8,11.4],s4:[11.2,15.4],s5:[15.2,21.4],s6:[21.2,25.6],s7:[25.4,30.5]};
+const F=.45;
+function vis(id,t){const[a,b]=W[id];if(t<a||t>b)return 0;return Math.min(ease((t-a)/F),ease((b-t)/F))}
+function rise(el,t,t0,d=.7,dist=60){const p=ease((t-t0)/d);el.style.opacity=p;el.style.transform=`translateY(${(1-p)*dist}px)`}
+function kb(el,t,a,b,s0=1,s1=1.08,x0=0,x1=0){const p=io((t-a)/(b-a));el.style.transform=`scale(${s0+(s1-s0)*p}) translateX(${x0+(x1-x0)*p}px)`}
+window.render=function(t){
+  for(const id in W){const e=$('#'+id);e.style.opacity=id==='s1'&&t<W.s1[1]-F?1:vis(id,t)}
+  // S1
+  {const p=ease(t/1.3);const L=$('#logo');L.style.opacity=p;L.style.transform=`scale(${.86+.14*p})`;
+   rise($('#wm'),t,.8,.8,40);rise($('#wl'),t,1.3,.8,30)}
+  // S2
+  {const a=W.s2[0];kb($('#i2'),t,a,W.s2[1],1.0,1.1);rise($('#t2a'),t,a+.5);rise($('#t2b'),t,a+1.0);rise($('#t2c'),t,a+1.5)}
+  // S3
+  {const a=W.s3[0];kb($('#i3'),t,a,W.s3[1],1.12,1.0,-30,30);rise($('#t3a'),t,a+.5)}
+  // S4
+  {const a=W.s4[0];kb($('#i4'),t,a,W.s4[1],1.0,1.12);rise($('#t4a'),t,a+.5);rise($('#t4b'),t,a+1.2,.7,30)}
+  // S5 colorways: 4 x 1.45s
+  {const a=W.s5[0]+.2,step=1.45,imgs=$$('.cw'),names=$$('.cwn'),sws=$$('.sw');
+   const k=cl(Math.floor((t-a)/step),0,3);
+   imgs.forEach((im,i)=>{const st=a+i*step;const o=i===0?1:ease((t-st)/.35);im.style.opacity=t>=st||i===0?o:0;
+     const p=io((t-st)/(step+.4));im.style.transform=`scale(${1.06-.06*cl(p)})`});
+   names.forEach((n,i)=>{const st=a+i*step;if(i===k){rise(n,t,st+.1,.5,40)}else n.style.opacity=0});
+   sws.forEach((s,i)=>{s.style.outline=i===k?'2px solid #000':'none';s.style.outlineOffset='6px';s.style.opacity=t>=a+i*step-.05?1:.25})}
+  // S6
+  {const a=W.s6[0];kb($('#i6a'),t,a,W.s6[1],1.0,1.08);kb($('#i6b'),t,a,W.s6[1],1.08,1.0,20,-20);rise($('#t6a'),t,a+.7)}
+  // S7
+  {const a=W.s7[0];const g=$('#grid');const p=ease((t-a)/.9);g.style.opacity=p;g.style.transform=`translateY(${(1-p)*40}px)`;
+   rise($('#endtxt'),t,a+.6,.9,40);
+   const c=$('#cta');const q=t-a-2.2;c.style.background=q>0&&q<.5?'#000':'transparent';c.style.color=q>0&&q<.5?'#fff':'#000'}
+};
+render(0);
+</script>
+</body></html>
