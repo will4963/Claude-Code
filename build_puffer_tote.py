@@ -15,14 +15,19 @@ W, H, D = 0.40, 0.32, 0.16           # working size (m)
 hx, hy, hz = W/2, D/2, H/2
 R = 0.04                             # soft corner rounding
 PUFF = 0.020                         # cushion loft per quilt panel
-COLS_FRONT, ROWS = 4, 2              # reference: 4 columns x 2 rows of fat cushions
-COLS_SIDE = 2
+CELL = 0.16                          # square quilt panels: 0.16 x 0.16 m
+# front: two full squares centred (the reference's 2x2 block) + narrow wrap strips at the corners
+X_EDGES = [-hx, -CELL, 0.0, CELL, hx]
+Y_EDGES = [-hy, hy]                  # side: one square across the 0.16 m depth
+Z_EDGES = [-hz, 0.0, hz]             # two square rows over the 0.32 m height
 
 def clamp(v, a, b): return max(a, min(b, v))
 
-def cushion(a, half, n):
-    f = clamp((a + half) / (2*half), 0, 1) * n
-    return math.sin(math.pi * (f - math.floor(f))) if f < n else 0.0
+def cushion(a, edges):
+    for e0, e1 in zip(edges, edges[1:]):
+        if e0 <= a <= e1:
+            return math.sin(math.pi * (a - e0) / (e1 - e0))
+    return 0.0
 
 # ---------------- body ----------------
 bm = bmesh.new()
@@ -35,7 +40,7 @@ for v in bm.verts:
     d = p - q
     n = d.normalized() if d.length > 1e-9 else Vector((0, 0, 1))
     s = q + n*R
-    cx = cushion(s.x, hx, COLS_FRONT); cy = cushion(s.y, hy, COLS_SIDE); cz = cushion(s.z, hz, ROWS)
+    cx = cushion(s.x, X_EDGES); cy = cushion(s.y, Y_EDGES); cz = cushion(s.z, Z_EDGES)
     front = (cx*cz) ** 0.35           # flat-topped pillows, tight seam channels
     side  = (cy*cz) ** 0.35
     base  = (cx*cy) ** 0.35
@@ -64,6 +69,7 @@ bm.normal_update()
 bvh = BVHTree.FromBMesh(bm)
 me = bpy.data.meshes.new("ToteBody"); bm.to_mesh(me); bm.free()
 body = bpy.data.objects.new("PufferTote", me); scene.collection.objects.link(body)
+print("BODY_ONLY_DIMS", tuple(round(d, 4) for d in body.dimensions))
 
 def front_y(x, z):
     hit = bvh.ray_cast(Vector((x, -1.0, z)), Vector((0, 1, 0)))
@@ -132,6 +138,16 @@ bsdf.inputs["Base Color"].default_value = (srgb2lin(0x23), srgb2lin(0x1f), srgb2
 bsdf.inputs["Roughness"].default_value = 0.32
 bsdf.inputs["Sheen Weight"].default_value = 0.25
 bsdf.inputs["Coat Weight"].default_value = 0.15
+# satin nylon crinkle: fine stretched noise -> bump on the BSDF normal (values above untouched)
+nt = mat.node_tree
+tc = nt.nodes.new("ShaderNodeTexCoord"); mp = nt.nodes.new("ShaderNodeMapping")
+mp.inputs["Scale"].default_value = (1.0, 1.0, 2.2)
+nz = nt.nodes.new("ShaderNodeTexNoise"); nz.inputs["Scale"].default_value = 28.0
+nz.inputs["Detail"].default_value = 6.0; nz.inputs["Distortion"].default_value = 0.6
+bp = nt.nodes.new("ShaderNodeBump"); bp.inputs["Strength"].default_value = 0.18
+bp.inputs["Distance"].default_value = 0.002
+nt.links.new(tc.outputs["Object"], mp.inputs["Vector"]); nt.links.new(mp.outputs["Vector"], nz.inputs["Vector"])
+nt.links.new(nz.outputs["Fac"], bp.inputs["Height"]); nt.links.new(bp.outputs["Normal"], bsdf.inputs["Normal"])
 body.data.materials.append(mat)
 
 # ---------------- studio (warm grey, like the reference backdrop) ----------------
@@ -155,6 +171,8 @@ area("Key", (-1.3, -1.2, 1.5), 45, 0.5)
 area("Fill", (1.5, -0.9, 0.6), 8, 0.6)
 area("Rim", (0.7, 0.9, 1.3), 45, 0.5)
 area("Top", (0, -0.2, 2.0), 40, 0.6)
+# big soft-box above/behind camera: the satin nylon mirrors it as broad sheen across each pillow
+area("Softbox", (-0.35, -1.9, 1.05), 55, 1.4)
 area("Wall", (0, 0.2, 1.4), 160, 2.0, target=(0, 1.2, 0.6))
 # light linking: the backdrop light only lights the backdrop, so the bag keeps its Midnight depth
 bg = bpy.data.collections.new("Backdrop"); scene.collection.children.link(bg)
